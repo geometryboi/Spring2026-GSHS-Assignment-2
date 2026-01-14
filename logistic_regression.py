@@ -15,7 +15,7 @@ def logistic_regression(x_train: np.ndarray, y_train: np.ndarray, x_test: np.nda
         y_pred: Predicted labels for the test set
     '''
     # Your code here
-    lr = 0.1
+    lr = 0.1 
     epochs = 1000
     n,d = x_train.shape
     X = np.hstack([np.ones((n, 1)), x_train])
