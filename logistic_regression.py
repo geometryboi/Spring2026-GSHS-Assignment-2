@@ -1,4 +1,4 @@
-import math
+import numpy as np
 
 def logistic_regression(x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray) -> np.ndarray:
     '''
@@ -16,41 +16,17 @@ def logistic_regression(x_train: np.ndarray, y_train: np.ndarray, x_test: np.nda
     '''
     # Your code here
     lr = 0.1
-    epochs = 5000
-
-    n_samples = len(x_train)
-    n_features = len(x_train[0])
-
-    # weight 초기화
-    w = [0.0] * n_features
-
-    def sigmoid(z):
-        return 1 / (1 + math.exp(-z))
-
-    # Gradient Descent
+    epochs = 1000
+    n,d = x_train.shape
+    X = np.hstack([np.ones((n, 1)), x_train])
+    X_test = np.hstack([np.ones((x_test.shape[0], 1)), x_test])
+    w = np.zeros(d + 1)
+    def sigmoid(z): return 1 / (1 + np.exp(-z))
     for _ in range(epochs):
-        dw = [0.0] * n_features
-
-        for i in range(n_samples):
-            z = 0.0
-            for j in range(n_features):
-                z += x_train[i][j] * w[j]
-
-            y_pred = sigmoid(z)
-            error = y_pred - y_train[i]
-
-            for j in range(n_features):
-                dw[j] += error * x_train[i][j]
-
-        for j in range(n_features):
-            w[j] -= lr * dw[j] / n_samples
-
-    # Test prediction
-    y_pred = []
-    for x in x_test:
-        z = 0.0
-        for j in range(n_features):
-            z += x[j] * w[j]
-        y_pred.append(1 if sigmoid(z) >= 0.5 else 0)
-
+        z = X @ w
+        y_pred = sigmoid(z)
+        grad = (1 / n) * X.T @ (y_pred - y_train)
+        w -= lr * grad
+    probs = sigmoid(X_test @ w)
+    y_pred = (probs >= 0.5).astype(int)
     return y_pred
